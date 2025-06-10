@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>캐릭터 애니메이션</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+</head>
+<body>
+    <script>
+        // 이미지 변수 선언 (파일명과 동일)
+        let earlyAHead, earlyARightArm, earlyALeftArm, earlyABody, earlyAFace, happyAFace, sadAFace, ARightArmV
+        let moveABody, moveARightArm, moveALeftArm, moveARightLeg, moveALeftLeg, moveHappyAFace, moveSadAFace
+        let bg
+        let currentState = 'early'
+        let imageX, imageY
+        let sadAStartFrame = 0
+        let happyAStartFrame = 0
+
+        // 원본 캔버스 크기
+        const origW = 800
+        const origH = 900
+        let scaleFactor
+
+        function preload() {
+            // 모든 에셋 프리로드
+            earlyAHead     = loadImage('earlyAHead.png')
+            earlyARightArm = loadImage('earlyARightArm.png')
+            earlyALeftArm  = loadImage('earlyALeftArm.png')
+            earlyABody     = loadImage('earlyABody.png')
+            earlyAFace     = loadImage('earlyAFace.png')
+            happyAFace     = loadImage('happyAFace.png')
+            sadAFace       = loadImage('sadAFace.png')
+            ARightArmV     = loadImage('ARightArmV.png')
+            moveABody      = loadImage('moveABody.png')
+            moveARightArm  = loadImage('moveARightArm.png')
+            moveALeftArm   = loadImage('moveALeftArm.png')
+            moveARightLeg  = loadImage('moveARightLeg.png')
+            moveALeftLeg   = loadImage('moveALeftLeg.png')
+            moveHappyAFace = loadImage('moveHappyAFace.png')
+            moveSadAFace   = loadImage('moveSadAFace.png')
+            bg             = loadImage('bg.png')
+        }
+
+        function setup() {
+            createCanvas(400, 600)
+            scaleFactor = min(width / origW, height / origH)
+            imageX = origW / 2
+            imageY = origH / 2
+        }
+
+        function draw() {
+            push()
+            scale(scaleFactor)
+            translate((width / scaleFactor - origW) / 2, (height / scaleFactor - origH) / 2)
+            imageMode(CENTER)
+            image(bg, imageX, imageY, origW, origH)
+            drawCharacterA()
+            pop()
+        }
+
+        // 초기 상태 드로잉 함수
+        function drawEarlyA() {
+            image(earlyAHead,     imageX, imageY, origW, origH)
+            image(earlyARightArm, imageX, imageY, origW, origH)
+            image(earlyALeftArm,  imageX, imageY, origW, origH)
+            image(earlyABody,     imageX, imageY, origW, origH)
+            image(earlyAFace,     imageX, imageY, origW, origH)
+        }
+
+        // 행복한 상태 함수
+        function drawHappyA() {
+            let moveTime = frameCount - happyAStartFrame
+            if (moveTime < 60) {
+                image(earlyAHead,     imageX, imageY, origW, origH)
+                image(earlyALeftArm,  imageX, imageY, origW, origH)
+                image(ARightArmV,      imageX, imageY, origW, origH)
+                image(earlyABody,     imageX, imageY, origW, origH)
+                image(happyAFace,     imageX, imageY, origW, origH)
+            } else {
+                let baseX = imageX + (moveTime - 60)
+                let armSwing = sin(frameCount * 0.1) * 0.4
+                let legSwing = sin(frameCount * 0.1 + PI) * 0.4
+
+                // 왼팔
+                push()
+                translate(baseX, imageY)
+                translate(25, -15)
+                rotate(-armSwing)
+                image(moveALeftArm, -20, 15, origW, origH)
+                pop()
+
+                // 왼다리
+                push()
+                translate(baseX, imageY)
+                translate(25, 100)
+                rotate(-legSwing)
+                image(moveALeftLeg, -20, -80, origW, origH)
+                pop()
+
+                // 오른다리
+                push()
+                translate(baseX, imageY)
+                translate(25, 100)
+                rotate(legSwing)
+                image(moveARightLeg, -20, -80, origW, origH)
+                pop()
+
+                // 몸통 및 얼굴
+                image(moveABody,      baseX, imageY, origW, origH)
+                image(moveHappyAFace, baseX, imageY, origW, origH)
+
+                // 오른팔
+                push()
+                translate(baseX, imageY)
+                translate(25, -15)
+                rotate(armSwing)
+                image(moveARightArm, -20, 15, origW, origH)
+                pop()
+            }
+        }
+
+        // 슬픈 상태 함수
+        function drawSadA() {
+            let moveTime = frameCount - sadAStartFrame
+            if (moveTime < 60) {
+                image(earlyAHead,      imageX, imageY, origW, origH)
+                image(earlyALeftArm,   imageX, imageY, origW, origH)
+                image(earlyARightArm,  imageX, imageY, origW, origH)
+                image(earlyABody,      imageX, imageY, origW, origH)
+                image(sadAFace,        imageX, imageY, origW, origH)
+            } else {
+                let baseX = imageX + (moveTime - 60)
+                let armSwing = sin(frameCount * 0.1) * 0.4
+                let legSwing = sin(frameCount * 0.1 + PI) * 0.4
+
+                // 왼팔
+                push()
+                translate(baseX, imageY)
+                translate(25, -15)
+                rotate(-armSwing)
+                image(moveALeftArm, -20, 15, origW, origH)
+                pop()
+
+                // 왼다리
+                push()
+                translate(baseX, imageY)
+                translate(25, 100)
+                rotate(-legSwing)
+                image(moveALeftLeg, -20, -80, origW, origH)
+                pop()
+
+                // 오른다리
+                push()
+                translate(baseX, imageY)
+                translate(25, 100)
+                rotate(legSwing)
+                image(moveARightLeg, -20, -80, origW, origH)
+                pop()
+
+                // 몸통 및 얼굴
+                image(moveABody,     baseX, imageY, origW, origH)
+                image(moveSadAFace,  baseX, imageY, origW, origH)
+
+                // 오른팔
+                push()
+                translate(baseX, imageY)
+                translate(25, -15)
+                rotate(armSwing)
+                image(moveARightArm, -20, 15, origW, origH)
+                pop()
+            }
+        }
+
+        function drawCharacterA() {
+            if (currentState === 'early') drawEarlyA()
+            else if (currentState === 'happy') drawHappyA()
+            else if (currentState === 'sad') drawSadA()
+        }
+
+        function mousePressed() {
+            if (mouseX < width / 3) {
+                currentState = 'happy'
+                happyAStartFrame = frameCount
+            } else if (mouseX > (width / 3) * 2) {
+                currentState = 'sad'
+                sadAStartFrame = frameCount
+            } else {
+                currentState = 'early'
+            }
+        }
+    </script>
+</body>
+</html>
